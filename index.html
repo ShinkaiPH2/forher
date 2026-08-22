@@ -160,6 +160,13 @@
     z-index: 80;
     pointer-events: auto;
   }
+  /* safety net: guarantee the Yes/No buttons are always clickable above every other
+     layer on the page (dancer cards, modals, etc.), no matter what else gets added later */
+  #question-wrap.show .buttons-row,
+  #question-wrap.show button.choice{
+    z-index: 999 !important;
+    pointer-events: auto !important;
+  }
 
   button.choice{
     font-size: 1.1rem;
@@ -354,7 +361,7 @@
   }
 
   #replay-btn{
-    margin-top: 34px;
+    margin-top: 14px;
     background: transparent;
     border: 1.5px solid #d99bae;
     color: #a0798a;
@@ -365,16 +372,30 @@
     cursor: pointer;
     font-family: inherit;
     opacity: 0;
+    display: none;
+    position: relative;
+    z-index: 100;
+    pointer-events: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s ease, background 0.15s ease;
   }
-  #final-wrap.show #replay-btn{
-    animation: fadeInBtn 1s ease forwards;
-    animation-delay: 2.4s;
+  #replay-btn.visible{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    pointer-events: auto;
+    animation: popInBtn 0.7s cubic-bezier(.17,1.4,.4,1) forwards;
+    animation-delay: 0.2s;
   }
   #replay-btn:hover{
     background: rgba(255,179,198,0.25);
+    transform: scale(1.04);
   }
-  @keyframes fadeInBtn{
-    to{ opacity: 1; }
+  @keyframes popInBtn{
+    0%{ opacity: 0; transform: scale(0.6) translateY(12px); }
+    70%{ opacity: 1; transform: scale(1.05) translateY(-2px); }
+    100%{ opacity: 1; transform: scale(1) translateY(0); }
   }
 
   /* music toggle -- manual fallback in case autoplay-on-click gets silently blocked */
@@ -514,28 +535,28 @@
     background: linear-gradient(135deg, #ffccd5, #ffb3c6);
     border: none;
     color: #7a3b52;
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 700;
-    padding: 12px 28px;
+    padding: 13px 30px;
     border-radius: 30px;
     cursor: pointer;
     font-family: inherit;
     box-shadow: 0 4px 14px rgba(180,120,140,0.3);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     opacity: 0;
-    display: block;
+    display: none;
     margin-left: auto;
     margin-right: auto;
     position: relative;
     z-index: 100;
-    pointer-events: auto;
+    pointer-events: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
-  #final-wrap.show #care-package-btn{
-    animation: fadeInBtn 1s ease forwards;
-    animation-delay: 2.1s;
+  #care-package-btn.visible{
+    display: block;
     pointer-events: auto;
+    animation: popInBtn 0.7s cubic-bezier(.17,1.4,.4,1) forwards;
   }
   #care-package-btn:hover{
     transform: scale(1.06);
@@ -1410,9 +1431,14 @@ function handleYesSelection(e){
 
   questionWrap.classList.remove('show');
   questionWrap.classList.add('hide');
-  setTimeout(()=>{
+  setTimeout(async ()=>{
     finalWrap.classList.add('show');
-    popSequence(finalMsgEl, finalMsgLines, finalMsgSubIndexes, 1700, 300);
+    await popSequence(finalMsgEl, finalMsgLines, finalMsgSubIndexes, 1700, 300);
+    await sleep(600);
+    const careBtn = document.getElementById('care-package-btn');
+    const replayBtn = document.getElementById('replay-btn');
+    if(careBtn) careBtn.classList.add('visible');
+    if(replayBtn) replayBtn.classList.add('visible');
   }, 500);
 }
 
