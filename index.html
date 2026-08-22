@@ -547,34 +547,6 @@
     to{ transform: scaleX(-1) translateX(var(--walk-distance)); }
   }
 
-  /* silly background gag bubble (original joke, not affiliated with any film) */
-  .gag-bubble{
-    position: fixed;
-    bottom: 6%;
-    left: 50%;
-    transform: translateX(-50%) scale(0);
-    background: var(--warm-white);
-    border: 2px solid var(--pink-deep);
-    border-radius: 30px;
-    padding: 10px 22px;
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #a0798a;
-    box-shadow: 0 6px 18px rgba(107,74,86,0.25);
-    z-index: 50;
-    white-space: nowrap;
-    animation: gagPop 3.2s ease forwards;
-  }
-  @keyframes gagPop{
-    0%{ transform: translateX(-50%) scale(0) rotate(0deg); opacity:0; }
-    12%{ transform: translateX(-50%) scale(1.15) rotate(-4deg); opacity:1; }
-    20%{ transform: translateX(-50%) scale(1) rotate(3deg); }
-    28%{ transform: translateX(-50%) scale(1) rotate(-3deg); }
-    36%{ transform: translateX(-50%) scale(1) rotate(2deg); }
-    44%{ transform: translateX(-50%) scale(1) rotate(0deg); }
-    88%{ transform: translateX(-50%) scale(1) rotate(0deg); opacity:1; }
-    100%{ transform: translateX(-50%) scale(0.7) rotate(0deg); opacity:0; }
-  }
 </style>
 </head>
 <body>
@@ -875,15 +847,6 @@ function playSillyJingle(){
   });
 }
 
-// silly floating gag bubble -- just a fun little text pop, background music already plays on its own
-function spawnGagBubble(){
-  const bubble = document.createElement('div');
-  bubble.className = 'gag-bubble';
-  bubble.textContent = '🍌 tiny surprise incoming... 🍌';
-  document.body.appendChild(bubble);
-  setTimeout(()=> bubble.remove(), 3300);
-}
-
 // ---------- sequence timing ----------
 const snoopy = document.getElementById('snoopy');
 const snoopyBody = document.getElementById('snoopy-body');
@@ -962,10 +925,6 @@ document.getElementById('proceed-btn').addEventListener('click', ()=>{
       });
     musicToggle.classList.add('visible');
   }
-
-  // the silly gag bubble still pops up every so often just for fun
-  setTimeout(spawnGagBubble, 8000);
-  setInterval(spawnGagBubble, 25000);
 
   // multiple goofy dancing sticker cards floating around the perimeter (never over the center text)
   const dancerCards = Array.from(document.querySelectorAll('.dancer-card'));
