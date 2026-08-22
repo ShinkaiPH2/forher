@@ -114,21 +114,27 @@
     width: 600px;
     opacity:0;
     pointer-events:none;
+    display: none;
     z-index: 70;
   }
+  .center-msg:not(.show) *{
+    pointer-events: none !important;
+  }
   .center-msg.show{
+    display: block !important;
     animation: fadeInMsg 1.6s ease forwards;
     pointer-events:auto;
+  }
+  .center-msg.show *{
+    pointer-events: auto;
   }
   @keyframes fadeInMsg{
     0%{ opacity:0; transform: translate(-50%,-40%); }
     100%{ opacity:1; transform: translate(-50%,-50%); }
   }
   .center-msg.hide{
-    animation: fadeOutMsg 0.8s ease forwards;
-  }
-  @keyframes fadeOutMsg{
-    to{ opacity:0; transform: translate(-50%,-60%); }
+    display: none !important;
+    pointer-events:none !important;
   }
 
   #love-note{
@@ -151,6 +157,8 @@
     gap: 30px;
     position: relative;
     height: 70px;
+    z-index: 80;
+    pointer-events: auto;
   }
 
   button.choice{
@@ -163,10 +171,17 @@
     box-shadow: 0 4px 14px rgba(180,120,140,0.25);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     font-family: inherit;
+    pointer-events: auto;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
   #yes-btn{
     background: linear-gradient(135deg, #ffb3c6, #ffd6e0);
     color: #7a3b52;
+    position: relative;
+    z-index: 90;
+    cursor: pointer;
+    pointer-events: auto;
   }
   #yes-btn:hover{
     transform: scale(1.06);
@@ -176,10 +191,13 @@
     background: var(--warm-white);
     color: #a0798a;
     position: relative;
-    z-index: 5;
+    z-index: 85;
+    cursor: pointer;
+    pointer-events: auto;
   }
   #no-btn.escaping{
     position: fixed;
+    z-index: 95;
     transition: left 0.28s cubic-bezier(.2,1.4,.6,1), top 0.28s cubic-bezier(.2,1.4,.6,1);
   }
 
@@ -1364,7 +1382,15 @@ function burstConfetti(){
   }
 }
 
-yesBtn.addEventListener('click', ()=>{
+let yesHandled = false;
+function handleYesSelection(e){
+  if(e){
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  if(yesHandled) return;
+  yesHandled = true;
+
   burstConfetti();
   playChime();
   dodgeEnabled = false;
@@ -1382,8 +1408,11 @@ yesBtn.addEventListener('click', ()=>{
   setTimeout(()=>{
     finalWrap.classList.add('show');
     popSequence(finalMsgEl, finalMsgLines, finalMsgSubIndexes, 1700, 300);
-  }, 700);
-});
+  }, 500);
+}
+
+yesBtn.addEventListener('click', handleYesSelection);
+yesBtn.addEventListener('touchend', handleYesSelection);
 
 // ---------- Care Package Modal ----------
 function openCareModal(e){
